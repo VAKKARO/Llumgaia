@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>El Lenguaje de las Piedras — Trigaia</title>
+
+  <!-- Google Fonts: Cinzel & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Main Mobile Container (440px max-width, 100dvh) -->
+  <main class="mobile-viewport" id="mobile-viewport">
+    
+    <!-- Ambient Canvas: Spores, Fireflies & Mote bursts -->
+    <canvas id="ambient-canvas"></canvas>
+
+    <!-- Top Bar: Sound toggle & Back to Scene 1 button -->
+    <header class="app-topbar">
+      <button class="nav-back-btn hidden" id="btn-back-scene1" aria-label="Volver a las Piedras">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span>Volver</span>
+      </button>
+
+      <button class="sound-toggle-btn" id="sound-toggle" aria-label="Alternar sonido ambiental">
+        <span class="sound-indicator"></span>
+        <span>Sonido</span>
+      </button>
+    </header>
+
+    <!-- ====================================================================
+         SCENE 1: EL LENGUAJE DE LAS PIEDRAS
+         ==================================================================== -->
+    <section class="scene-layer scene-active" id="scene-stones" aria-label="Escena 1: El Lenguaje de las Piedras">
+      
+      <!-- Botón de Inicio: DESPERTAR EL VÍNCULO (+20% más grande) -->
+      <div class="action-button-container">
+        <button class="action-main-btn" id="btn-action" aria-label="Despertar el Vínculo">
+          <img src="assets/btn-despertar.png" alt="Despertar el Vínculo" draggable="false">
+        </button>
+      </div>
+
+      <!-- Círculo de Piedras Interactivo (+50% de tamaño) -->
+      <div class="altar-container" id="altar-container">
+        <!-- Base: Círculo de piedras sin nada -->
+        <img src="assets/altar-base.png" id="layer-base" class="altar-layer active" alt="Círculo de piedras ancestrales" draggable="false">
+        
+        <!-- Runas Iluminadas -->
+        <img src="assets/rune-conexion.png" id="layer-conexion" class="altar-layer" alt="Runa Conexión iluminada" draggable="false">
+        <img src="assets/rune-renovacion.png" id="layer-renovacion" class="altar-layer" alt="Runa Renovación iluminada" draggable="false">
+        <img src="assets/rune-dragon.png" id="layer-dragon" class="altar-layer" alt="Runa Dragón iluminada" draggable="false">
+        <img src="assets/rune-cuidado.png" id="layer-cuidado" class="altar-layer" alt="Runa Cuidado iluminada" draggable="false">
+
+        <!-- Zonas Táctiles calibradas sobre las 4 piedras con runas -->
+        <div class="hotspot-layer">
+          <button class="rune-hotspot hotspot-conexion" id="hotspot-conexion" data-rune="conexion" aria-label="Runa Conexión">
+            <span class="stone-halo"></span>
+          </button>
+          
+          <button class="rune-hotspot hotspot-renovacion" id="hotspot-renovacion" data-rune="renovacion" aria-label="Runa Renovación">
+            <span class="stone-halo"></span>
+          </button>
+          
+          <button class="rune-hotspot hotspot-dragon" id="hotspot-dragon" data-rune="dragon" aria-label="Runa Dragón">
+            <span class="stone-halo"></span>
+          </button>
+          
+          <button class="rune-hotspot hotspot-cuidado" id="hotspot-cuidado" data-rune="cuidado" aria-label="Runa Cuidado">
+            <span class="stone-halo"></span>
+          </button>
+
+          <button class="rune-hotspot hotspot-center" id="hotspot-center" data-rune="center" aria-label="Centro del Altar"></button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         SCENE 2: SEGUNDA INSTANCIA — TRIGAIA
+         ==================================================================== -->
+    <section class="scene-layer hidden" id="scene-trigaia" aria-label="Escena 2: Trigaia">
+      
+      <!-- Barra de Energía de Piedra: EN EL BORDE SUPERIOR, DEBAJO DE TRIGAIA -->
+      <div class="charge-bar-container hidden" id="charge-bar-container" aria-label="Barra de carga ancestral">
+        <img src="assets/bar-empty.png" id="bar-empty" class="bar-layer active" alt="Barra vacía" draggable="false">
+        <img src="assets/bar-half.png" id="bar-half" class="bar-layer" alt="Barra al 50%" draggable="false">
+        <img src="assets/bar-full.png" id="bar-full" class="bar-layer" alt="Barra al 100%" draggable="false">
+        <div class="bar-glow-aura"></div>
+      </div>
+
+      <!-- Huevo Interactivo del Fondo (Sin ningún halo invasivo) -->
+      <div class="egg-interactive-target" id="egg-container" aria-label="Huevo Ancestral"></div>
+
+      <!-- Contenedor del Dragón Volador -->
+      <div class="dragon-flight-stage hidden" id="dragon-flight-stage" aria-label="Vuelo del Dragón">
+        <img src="assets/dragon/frame-1.png" id="dragon-sprite" class="dragon-sprite" alt="Dragón Ancestral Volando" draggable="false">
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         MODAL: PERGAMINO "LA PALABRA ANCESTRAL"
+         ==================================================================== -->
+    <div class="scroll-modal-backdrop hidden" id="scroll-modal" role="dialog" aria-modal="true" aria-label="Pergamino de la Palabra Ancestral">
+      <div class="scroll-card">
+        <img src="assets/scroll-ancestral.png" class="scroll-bg-image" alt="Pergamino antiguo" draggable="false">
+        
+        <form class="scroll-form" id="scroll-form" autocomplete="off" onsubmit="return false;">
+          <input 
+            type="text" 
+            id="ancestral-word-input" 
+            class="ancestral-input" 
+            placeholder="Escribe aquí..." 
+            spellcheck="false" 
+            autocorrect="off" 
+            autocapitalize="off"
+            aria-label="Introduce la palabra ancestral">
+        </form>
+
+        <button class="scroll-close-btn" id="scroll-close-btn" aria-label="Cerrar pergamino">✕</button>
+        <div class="scroll-feedback" id="scroll-feedback"></div>
+      </div>
+    </div>
+
+    <!-- Flash místico de transición entre escenas -->
+    <div class="portal-flash" id="portal-flash"></div>
+
+  </main>
+
+  <!-- High-Performance Script -->
+  <script src="js/app.js"></script>
+</body>
+</html>

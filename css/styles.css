@@ -1,0 +1,638 @@
+/* ==========================================================================
+   EL LENGUAJE DE LAS PIEDRAS — TRIGAIA (Interactive Mobile Experience)
+   Design System & High-Performance Styles
+   ========================================================================== */
+
+:root {
+  --font-serif: 'Cinzel', 'Playfair Display', 'Georgia', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Magical Palette */
+  --color-teal-glow: #64e9d6;
+  --color-teal-bright: #9afff2;
+  --color-teal-soft: rgba(100, 233, 214, 0.35);
+  --color-amber-gold: #f5b041;
+  --color-bg-dark: #121915;
+  --color-text-main: #f0f7f4;
+
+  /* Mobile Ergonomics & Safe Areas */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --app-max-width: 440px;
+  
+  /* Curves */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Base Reset & Mobile Touch Optimizations */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: var(--color-bg-dark);
+  font-family: var(--font-sans);
+  color: var(--color-text-main);
+  touch-action: pan-y;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App Outer Container: Portrait Viewport */
+.mobile-viewport {
+  position: relative;
+  width: 100%;
+  max-width: var(--app-max-width);
+  height: 100dvh;
+  margin: 0 auto;
+  background-image: url('../assets/bg-forest.png');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+  transition: background-image 0.8s ease-in-out;
+}
+
+.mobile-viewport.trigaia-mode {
+  background-image: url('../assets/bg-trigaia.png');
+}
+
+/* Ambient Canvas Layer */
+#ambient-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Top Bar */
+.app-topbar {
+  position: absolute;
+  top: calc(var(--safe-top) + 10px);
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 30;
+}
+
+/* Volver a Escena 1 */
+.nav-back-btn {
+  background: rgba(14, 25, 20, 0.6);
+  border: 1px solid rgba(100, 233, 214, 0.3);
+  border-radius: 999px;
+  padding: 6px 12px;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.2s var(--ease-spring), opacity 0.3s;
+}
+
+.nav-back-btn:active {
+  transform: scale(0.92);
+}
+
+.nav-back-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Audio Toggle */
+.sound-toggle-btn {
+  margin-left: auto;
+  background: rgba(14, 25, 20, 0.6);
+  border: 1px solid rgba(100, 233, 214, 0.28);
+  border-radius: 999px;
+  padding: 5px 11px;
+  color: var(--color-teal-glow);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.sound-toggle-btn:active {
+  transform: scale(0.92);
+}
+
+.sound-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-teal-glow);
+  box-shadow: 0 0 8px var(--color-teal-glow);
+}
+
+.sound-toggle-btn.muted .sound-indicator {
+  background: #666;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   SCENE MANAGEMENT (Crossfade a 60fps)
+   ========================================================================== */
+
+.scene-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.scene-layer.scene-active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.scene-layer.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.96);
+}
+
+/* ==========================================================================
+   SCENE 1: PIEDRAS ANCESTRALES
+   ========================================================================== */
+
+/* Botón "DESPERTAR EL VÍNCULO": 20% Más Grande (300px) */
+.action-button-container {
+  position: absolute;
+  top: 38dvh;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 15;
+}
+
+.action-main-btn {
+  position: relative;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  width: 300px;
+  max-width: 88%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  touch-action: manipulation;
+  transition: transform 0.22s var(--ease-spring), filter 0.3s ease;
+  will-change: transform;
+}
+
+.action-main-btn:active {
+  transform: scale(0.93) translateY(2px);
+}
+
+.action-main-btn img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 16px rgba(100, 233, 214, 0.45));
+  transition: filter 0.3s ease;
+}
+
+.action-main-btn.pulsing img {
+  animation: pulseGlow 2.6s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 14px rgba(100, 233, 214, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 28px rgba(100, 233, 214, 0.8));
+  }
+}
+
+/* Altar 50% Más Grande */
+.altar-container {
+  position: absolute;
+  bottom: calc(var(--safe-bottom) - 35px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150%;
+  max-width: 660px;
+  aspect-ratio: 601 / 502;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.8));
+  touch-action: pan-y;
+  z-index: 10;
+}
+
+.altar-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateZ(0);
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity;
+}
+
+.altar-layer.active {
+  opacity: 1;
+}
+
+.hotspot-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  z-index: 12;
+}
+
+.rune-hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.stone-halo {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    rgba(100, 233, 214, 0.08) 0%,
+    rgba(100, 233, 214, 0.2) 35%,
+    rgba(100, 245, 226, 0.45) 65%,
+    rgba(72, 219, 196, 0.15) 85%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 8px rgba(100, 233, 214, 0.7));
+  opacity: 0.52;
+  transform: scale(0.95);
+  animation: haloGentleGlow 3.5s ease-in-out infinite;
+  transition: opacity 0.35s ease, transform 0.35s ease, filter 0.35s ease;
+}
+
+@keyframes haloGentleGlow {
+  0%, 100% {
+    transform: scale(0.9);
+    opacity: 0.4;
+    filter: drop-shadow(0 0 5px rgba(100, 233, 214, 0.5));
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.68;
+    filter: drop-shadow(0 0 12px rgba(100, 233, 214, 0.9));
+  }
+}
+
+.hotspot-conexion .stone-halo { animation-delay: 0s; }
+.hotspot-renovacion .stone-halo { animation-delay: 0.9s; }
+.hotspot-dragon .stone-halo { animation-delay: 1.8s; }
+.hotspot-cuidado .stone-halo { animation-delay: 2.7s; }
+
+.rune-hotspot.active .stone-halo {
+  opacity: 0.88;
+  transform: scale(1.25);
+  filter: drop-shadow(0 0 16px rgba(100, 233, 214, 1));
+}
+
+.hotspot-conexion { left: 49.1%; top: 15.5%; }
+.hotspot-renovacion { left: 77.9%; top: 33.0%; }
+.hotspot-dragon { left: 49.9%; top: 52.5%; }
+.hotspot-cuidado { left: 25.0%; top: 32.5%; }
+
+.hotspot-center {
+  left: 55%;
+  top: 33%;
+  width: 140px;
+  height: 100px;
+  border-radius: 45%;
+}
+
+/* ==========================================================================
+   SCENE 2: TRIGAIA (HUEVO LIMPIO, BARRA SUPERIOR Y DRAGÓN)
+   ========================================================================== */
+
+/* Barra de Carga de Piedra: EN EL BORDE SUPERIOR, DEBAJO DE TRIGAIA (Top ~31%) */
+.charge-bar-container {
+  position: absolute;
+  top: 31%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 86%;
+  max-width: 340px;
+  aspect-ratio: 335 / 56;
+  z-index: 22;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 12px rgba(100, 233, 214, 0.3));
+  transition: opacity 0.5s ease, transform 0.5s var(--ease-spring);
+}
+
+.charge-bar-container.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-14px);
+}
+
+.bar-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  will-change: opacity;
+}
+
+.bar-layer.active {
+  opacity: 1;
+}
+
+.bar-glow-aura {
+  position: absolute;
+  inset: -10px;
+  background: radial-gradient(ellipse at center, rgba(100, 233, 214, 0.4) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.bar-full-active .bar-glow-aura {
+  opacity: 1;
+  animation: barFullPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes barFullPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+/* Huevo Interactivo: Totalmente limpio y transparente sobre el huevo del fondo */
+.egg-interactive-target {
+  position: absolute;
+  left: 47.3%;
+  top: 71.5%;
+  transform: translate(-50%, -50%);
+  width: 106px;
+  height: 136px;
+  border-radius: 50% 50% 46% 46% / 60% 60% 40% 40%;
+  cursor: pointer;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  background: transparent;
+}
+
+/* ==========================================================================
+   DRAGÓN VOLADOR (Sprite Sequence + Movimiento Aéreo)
+   ========================================================================== */
+
+.dragon-flight-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 25;
+  overflow: hidden;
+  transition: opacity 0.6s ease;
+}
+
+.dragon-flight-stage.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dragon-sprite {
+  position: absolute;
+  width: 230px;
+  max-width: 65vw;
+  height: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 28px rgba(100, 233, 214, 0.65));
+  will-change: transform, left, top;
+}
+
+/* ==========================================================================
+   MODAL: PERGAMINO ANCESTRAL
+   ========================================================================== */
+
+.scroll-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(8, 14, 12, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 40;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  opacity: 1;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.scroll-modal-backdrop.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.scroll-card {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 380 / 271;
+  filter: drop-shadow(0 18px 45px rgba(0, 0, 0, 0.85));
+  transform: scale(1);
+  transition: transform 0.35s var(--ease-spring);
+}
+
+.scroll-modal-backdrop.hidden .scroll-card {
+  transform: scale(0.85);
+}
+
+.scroll-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Formulario e Input sobre el óvalo del pergamino */
+.scroll-form {
+  position: absolute;
+  left: 12.4%;
+  top: 52.4%;
+  width: 73.4%;
+  height: 15.1%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ancestral-input {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 700;
+  color: #3b220d;
+  text-align: center;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  caret-color: #8c531b;
+}
+
+.ancestral-input::placeholder {
+  color: rgba(90, 55, 25, 0.45);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: none;
+}
+
+.scroll-close-btn {
+  position: absolute;
+  top: 8px;
+  right: 14px;
+  background: rgba(60, 36, 18, 0.6);
+  border: 1px solid rgba(190, 150, 100, 0.5);
+  color: #fff;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.scroll-close-btn:active {
+  transform: scale(0.9);
+}
+
+.scroll-feedback {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #7a1515;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-feedback.visible {
+  opacity: 1;
+}
+
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.scroll-card.shake {
+  animation: shakeError 0.45s ease-in-out;
+}
+
+/* Portal Flash */
+.portal-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, #ffffff 10%, rgba(154, 255, 242, 0.9) 60%, transparent 100%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 50;
+  transition: opacity 0.5s ease-out;
+}
+
+.portal-flash.flash-active {
+  opacity: 0.95;
+}
+
+/* Ripple Touch Effect */
+.touch-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(180, 255, 245, 0.7) 0%, rgba(100, 233, 214, 0.3) 40%, transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+  animation: rippleExpand 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+  z-index: 20;
+}
+
+@keyframes rippleExpand {
+  to {
+    transform: translate(-50%, -50%) scale(3.5);
+    opacity: 0;
+  }
+}
